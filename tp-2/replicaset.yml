@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: my-replicaset
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-container
+        image: my-image:latest
+        ports:
+        - containerPort: 80
+
+# Dans ce script, nous avons défini un objet ReplicaSet nommé "my-replicaset" qui va créer 3 réplicas de notre application. 
+# Le sélecteur est basé sur l'étiquette "app: my-app", qui sera utilisée pour sélectionner les pods créés par le ReplicaSet. 
+# Le modèle de pod est également défini avec une étiquette "app: my-app" et un conteneur nommé "my-container" qui utilise l'image "my-image:latest" et expose le port 80.
+
+# Lorsque ce script est appliqué à un cluster Kubernetes, le ReplicaSet va créer 3 pods avec les spécifications définies dans le modèle de pod. 
+# Si un pod échoue ou est supprimé, le ReplicaSet va en créer un nouveau pour maintenir le nombre de réplicas défini dans la spécification.

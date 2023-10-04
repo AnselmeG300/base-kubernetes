@@ -114,9 +114,77 @@ image spécifie l'image Docker à utiliser pour le conteneur. Dans ce cas, l'ima
 ports spécifie les ports du conteneur à exposer. Dans ce cas, le port 8080 est exposé dans le cluster.
 env définit les variables d'environnement à passer au conteneur. Dans ce cas, il y a une variable d'environnement nommée "APP_COLOR" avec une valeur "red".
 
-- Lancez votre pod et vérifiez qu’il est bien en cours d’exécution
-    kubectl apply -f pod.yml
-    kubectl get po
-    kubectl describe po simple-webapp-color
+lancez votre pod  
+# kubectl apply -f pod.yml
+vérifiez qu’il est bien en cours d’exécution
+# kubectl get po
+# kubectl describe po simple-webapp-color
+exposez votre pod en utilisant la commande 
+# kubectl port-forward <nom de votre pod> 8080:8080 –-address 0.0.0.0
+# kubectl port-forward simple-webapp-color 8090:8080 --address 0.0.0.0
+vérifiez que l’application est bien joignagle en ouvrant votre VM sur le port 8080
+supprimez votre pod
+# kubectl delete -f pod.yml
+vérifiez que l’application est bien supprimer en actualisant votre VM sur le port 8080 
+ou en tappant la cmde
+# kubectl get po
 
+Nous avons creer un objet de type pod, cependant nous allons passer à la creation d'un objet de type deploiement
+2 replicas d’un pod nginx
 
+creer le fichier nginx-deployment.yml
+Mettre le contenu suivant 
+
+apiVersion: apps/v1 spécifie la version de l'API Kubernetes utilisée pour créer cet objet
+kind: Deployment # spécifie le type d'objet Kubernetes créé, ici un déploiement
+metadata: # contient des informations sur le déploiement, telles que le nom et les étiquettes pour identifier notre ressource Kubernetes
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec: # contient les détails du déploiement, tels que le nombre de réplicas, la stratégie de mise à jour, le sélecteur et le templ de pod
+  replicas: 2 # Nous définissons deux réplicas pour l'application Nginx.
+  strategy:
+    type: RollingUpdate # Nous definissons la stratégie de mise à jour qui est une mise à jour en douceur (RollingUpdate) qui permet de mettre à jour nos pods un par un, sans interruption de service
+    rollingUpdate: Nous definissons egalement les options de maxSurge et maxUnavailable pour contrôler le nombre maximal de pods mis à jour et inactif simultanément
+      maxSurge: 1
+      maxUnavailable: 1
+  selector: La section selector est utilisée pour sélectionner les pods à mettre à jour en fonction des étiquettes. Ici, nous utilisons l'étiquette "app: nginx" pour sélectionner les pods Nginx.
+    matchLabels:
+      app: nginx
+  template: Dans cette section nous allons définir le modèle de pod qui sera créé.
+    metadata:
+      labels:
+        app: nginx # Nous définissons une étiquette "app: nginx" pour identifier les pods Nginx,
+    spec:
+      containers: nous configurons un conteneur Nginx avec un port d'écoute sur le port 80
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+
+notre script mis en place, lacons notre objet deployment 
+# kubectl apply -f nginx-deployment.yml
+verifions le nombre de nos objets de type deployment
+# kubectl get deploy
+verifions le nombre de nos objets de type replicaset
+# kubectl get replicaset
+verifions le nombre de nos objets de type pop
+# kubectl get po
+
+passons a la version latest de nginx
+pour cela on va mettre a jour la version de nginx dans le container
+ensuite tapons
+# kubectl apply -f nginx-deployment.yml
+on peut constater que le deployment reconfigure notre ressource
+
+pour suivre l'evolution de la mise a jour de notre version on tape 
+# kubectl get replicaset -o wide
+
+pour visualiser l'évolution de notre cluster
+# watch kubectl get all
+
+pour visualiser l'historique de notre deploiement 
+# kubectl rollout history deployment/nginx-deployment
+
+pour faire un rollback
+# kubectl rollout undo deployment/nginx-deployment
