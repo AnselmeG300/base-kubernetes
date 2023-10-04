@@ -212,3 +212,6 @@ Enfin, poussez ce de tp sur votre github afin de conservez tous vos fichiers
     git commit -m "message de commit personnalisé"
     git remote add origin http://url_repos_git
     git push origin main
+
+TIPS : Créer un fichier manifeste à partir d'une commande imperative : 
+# kubectl create deploy ubuntu --image=ubuntu:devel --replicas=3 --dry-run=client  -o yaml > deploy_ubuntu.yml
