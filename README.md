@@ -188,3 +188,27 @@ pour visualiser l'historique de notre deploiement
 
 pour faire un rollback
 # kubectl rollout undo deployment/nginx-deployment
+
+Nous avons terminé avec l'approche déclarative, nous allons continué avec l'approche impérative pour pouvoir créé nos ressources
+
+Supprimez toutes les ressources créées et recréez les en utilisant 
+  les commandes impératives
+
+    + lancement du pod :    
+# kubectl run --image=mmumshad/simple-webapp-color --env="APP_COLOR=red"  --restart=Never simple-webapp-color
+    + Suppression du pod :  
+# kubectl delete pod simple-webapp-color
+    + Lancement du deploy:  
+# kubectl create deployment --image=nginx:1.18.0 nginx-deployment
+    + Scaling du replicas:  
+# kubectl scale --replicas=2 deployment/nginx-deployment
+    + upgrade de version :  
+# kubectl set image deployment/nginx-deployment nginx=nginx 
+
+Enfin, poussez ce de tp sur votre github afin de conservez tous vos fichiers
+    cd ..
+    git init
+    git add . 
+    git commit -m "message de commit personnalisé"
+    git remote add origin http://url_repos_git
+    git push origin main
