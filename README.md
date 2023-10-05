@@ -206,9 +206,45 @@ Supprimez toutes les ressources créées et recréez les en utilisant
 # kubectl set image deployment/nginx-deployment nginx=nginx 
 
 Enfin, poussez ce de tp sur votre github afin de conservez tous vos fichiers
-    cd ..
-    git init
-    git add . 
-    git commit -m "message de commit personnalisé"
-    git remote add origin http://url_repos_git
-    git push origin main
+# cd ..
+# git init
+# git add . 
+# git commit -m "message de commit personnalisé"
+# git remote add origin http://url_repos_git
+# git push origin main
+
+TP4: GESTION DU RESEAU
+
+afficher les pods avec leur label 
+# kubectl get po --show-labels 
+filter les pods pour afficher ceux donc le label app=nginx et contenu dans le l'espace de nom production
+# kubectl get pods -l app=nginx --namespace=production
+
+
+Auto completion : 
+    https://kubernetes.io/docs/tasks/tools/included/optional-kubectl-configs-bash-linux/
+
+#####################   Creation des Manifestes   #####################
+# kubectl create namespace production --dry-run=client -o yaml > namespace.yml
+# kubectl run --image=mmumshad/simple-webapp-color --env="APP_COLOR=red"   simple-webapp-color-red --labels='app=web' -n production --port=8080 --dry-run=client -o yaml > pod-red.yml
+# kubectl run --image=mmumshad/simple-webapp-color --env="APP_COLOR=blue"   simple-webapp-color-blue --labels='app=web' -n production --port=8080 --dry-run=client -o yaml > pod-blue.yml
+# kubectl create service nodeport  service-nodeport-web  --node-port=30008 --tcp=8080:8080 -n production --dry-run=client -o yaml > service-nodeport-web.yml
+
+#####################   Lancement et verification du namespace   #####################
+kubectl apply -f namespace.yml
+kubectl get namespace
+
+#####################   Lancement et verification des pods et du service nodeport   #####################
+kubectl apply -f pod-red.yml  -n production
+kubectl get po  -n production -o wide
+kubectl apply -f pod-blue.yml  -n production
+kubectl get po  -n production -o wide
+kubectl apply -f service-nodeport-web.yml  -n production
+kubectl get service  -n production -o wide
+kubectl -n production describe svc service-nodeport-web
+
+
+#####################   Suppression des pods et du service nodeport   #####################
+kubectl delete -f pod-red.yml  -n production
+kubectl delete -f pod-blue.yml  -n production
+kubectl delete -f service-nodeport-web.yml  -n production
